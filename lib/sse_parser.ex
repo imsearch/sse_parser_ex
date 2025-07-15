@@ -287,13 +287,13 @@ defmodule SseParser do
     end
   end
 
-  defp stringify(_rest, args, context, _line, _offset) do
+  defp stringify(rest, args, context, _line, _offset) do
     args = Enum.map(args, &{elem(&1, 0), &1 |> elem(1) |> to_string()})
 
-    {args, context}
+    {rest, args, context}
   end
 
-  defp escape_event(_rest, [event: parts], context, _line, _offset) do
+  defp escape_event(rest, [event: parts], context, _line, _offset) do
     parts =
       Enum.map(parts, fn
         {:comment, comment} -> comment
@@ -301,7 +301,7 @@ defmodule SseParser do
         {:field, [name: name, value: value]} -> {name, value}
       end)
 
-    {[parts], context}
+    {rest, [parts], context}
   end
 
   defp interpret_interval(event, interval) do

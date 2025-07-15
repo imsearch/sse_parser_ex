@@ -92,6 +92,7 @@ defmodule SseParserTest do
     assert {:ok, [], rest} = feed(rest <> "the data part")
     assert {:ok, [], rest} = feed(rest <> "\n")
     assert {:ok, [attributes], rest} = feed(rest <> "\n")
+    assert "" == rest
 
     assert [
              {"event", "put"},
@@ -101,12 +102,14 @@ defmodule SseParserTest do
 
   test "parse multiple name onli streams" do
     assert {:ok, [e1, e2], rest} = feed("event1\n\nevent2\n\n")
+    assert "" == rest
     assert [{"event1", nil}] == e1
     assert [{"event2", nil}] == e2
   end
 
   test "parse comment" do
     assert {:ok, [e1, e2], rest} = feed(":test\n\n:test2\n\n")
+    assert "" == rest
     assert ["test"] == e1
     assert ["test2"] == e2
   end
@@ -114,6 +117,7 @@ defmodule SseParserTest do
   test "parse partial comment" do
     assert {:ok, [], rest} = feed(":te")
     assert {:ok, [e1], rest} = feed(rest <> "st\n\n")
+    assert "" == rest
     assert ["test"] == e1
   end
 
